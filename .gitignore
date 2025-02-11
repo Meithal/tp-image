@@ -1,2 +1,9 @@
 .vscode
 .DS_Store
+coverage.info
+coverage
+test
+test_cov
+*.gcda
+*gcno
+*.dSYM

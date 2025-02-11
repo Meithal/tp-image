@@ -8,9 +8,10 @@ clean:
 	rm *.gcov *.gcda *.gcno coverage.info
 	rm -rf coverage 
 	rm -rf *.dSYM
+	rm test test_cov
 
 cov:
-	g++ -std=c++2c -Wall -pedantic -Wextra -Wreturn-type -g --coverage tests.cpp image.cpp -o test
-	./test
+	g++ $(CPPflags) -g --coverage tests.cpp image.cpp -o test_cov
+	./test_cov
 	lcov --capture --directory . --output-file coverage.info --ignore-errors unsupported,format
 	genhtml --ignore-errors category coverage.info --output-directory coverage
