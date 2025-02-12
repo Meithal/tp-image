@@ -10,13 +10,13 @@ std::ostream& Image::print(std::ostream & o)
         << "(";
 
     switch (_model) {
-        case Image::Model::RGB:
+        case Image::RGB:
             o << "RGB";
             break;
-        case Image::Model::Gray:
+        case Image::Gray:
             o << "GRAY";
             break;
-        default:
+        case Image::None:
             o << "None";
             break;
     }
@@ -27,29 +27,29 @@ std::ostream& Image::print(std::ostream & o)
 }
 
 Image::Image()
-    : Image(0, 0, 0, Image::Model::None)
+    : Image(0, 0, 0, Image::None)
 {
 }
 
 Image::Image(int width, int height, 
-    int nb_channels, Image::Model model, 
+    int nb_channels, Model model, 
     int remplissage)
     : _width(width), 
     _height(height),
     _nb_channels(nb_channels), 
     _model(model),
-    _tab(new char[nb_channels*width*height])
+    _tab(new char[(unsigned)(nb_channels*width*height)])
 {
-    std::memset(_tab, remplissage, nb_channels*width*height);
+    std::memset(_tab, remplissage, (unsigned)(nb_channels*width*height));
 }
 
 Image::Image(int width, int height, int nb_channels, 
     Image::Model model, char* v)
 : _width(width), _height(height),
     _nb_channels(nb_channels), _model(model),
-    _tab(new char[nb_channels*width*height])
+    _tab(new char[(unsigned)(nb_channels*width*height)])
 {
-    std::memcpy(_tab, v, nb_channels*width*height);
+    std::memcpy(_tab, v, (unsigned)(nb_channels*width*height));
 }
 
 Image::Image(const Image &o) : Image(
@@ -142,7 +142,7 @@ char& Image::operator()(int channel, int y, int x)
 Image &Image::operator+(Image & o)
 {
     for(int i = 0; i < _nb_channels * _height * _width; i++) {
-        _tab[i] = clamp((int)_tab[i] + (int)o._tab[i], 0, 255);
+        _tab[i] = (char)clamp((int)_tab[i] + (int)o._tab[i], 0, 255);
     }
 
     return *this;
@@ -150,7 +150,7 @@ Image &Image::operator+(Image & o)
 Image &Image::operator+(int v)
 {
     for(int i = 0; i < _nb_channels * _height * _width; i++) {
-        _tab[i] = clamp((int)_tab[i] + v, 0, 255);
+        _tab[i] = (char)clamp((int)_tab[i] + v, 0, 255);
     }
 
     return *this;
@@ -159,7 +159,7 @@ Image &Image::operator+(int * pixel)
 {
     for(int i = 0; i < _nb_channels * _height * _width; i+=_nb_channels) {
         for(int j=0; j < _nb_channels; j++) {
-            _tab[i+j] = clamp((int)_tab[i + j] + *(pixel + j), 0, 255);
+            _tab[i+j] = (char)clamp((int)_tab[i + j] + *(pixel + j), 0, 255);
         }
     }
 
@@ -168,7 +168,7 @@ Image &Image::operator+(int * pixel)
 Image &Image::operator-(Image &o)
 {
     for(int i = 0; i < _nb_channels * _height * _width; i++) {
-        _tab[i] = clamp((int)_tab[i] - (int)o._tab[i], 0, 255);
+        _tab[i] = (char)clamp((int)_tab[i] - (int)o._tab[i], 0, 255);
     }
 
     return *this;
@@ -176,7 +176,7 @@ Image &Image::operator-(Image &o)
 Image &Image::operator-(int v)
 {
     for(int i = 0; i < _nb_channels * _height * _width; i++) {
-        _tab[i] = clamp((int)_tab[i] - v, 0, 255);
+        _tab[i] = (char)clamp((int)_tab[i] - v, 0, 255);
     }
 
     return *this;
@@ -185,7 +185,7 @@ Image &Image::operator-(int * pixel)
 {
     for(int i = 0; i < _nb_channels * _height * _width; i+=_nb_channels) {
         for(int j=0; j < _nb_channels; j++) {
-            _tab[i+j] = clamp((int)_tab[i + j] - *(pixel + j), 0, 255);
+            _tab[i+j] = (char)clamp((int)_tab[i + j] - *(pixel + j), 0, 255);
         }
     }
 
@@ -194,7 +194,7 @@ Image &Image::operator-(int * pixel)
 Image &Image::operator^(Image &o)
 {
     for(int i = 0; i < _nb_channels * _height * _width; i++) {
-        _tab[i] = clamp(std::abs((int)_tab[i] - (int)o._tab[i]), 0, 255);
+        _tab[i] = (char)clamp(std::abs((int)_tab[i] - (int)o._tab[i]), 0, 255);
     }
 
     return *this;
@@ -202,7 +202,7 @@ Image &Image::operator^(Image &o)
 Image &Image::operator^(int v)
 {
     for(int i = 0; i < _nb_channels * _height * _width; i++) {
-        _tab[i] = clamp(std::abs((int)_tab[i] - v), 0, 255);
+        _tab[i] = (char)clamp(std::abs((int)_tab[i] - v), 0, 255);
     }
 
     return *this;
@@ -211,7 +211,7 @@ Image &Image::operator^(int * pixel)
 {
     for(int i = 0; i < _nb_channels * _height * _width; i+=_nb_channels) {
         for(int j=0; j < _nb_channels; j++) {
-            _tab[i+j] = clamp(std::abs((int)_tab[i + j] - *(pixel + j)), 0, 255);
+            _tab[i+j] = (char)clamp(std::abs((int)_tab[i + j] - *(pixel + j)), 0, 255);
         }
     }
 
@@ -221,7 +221,7 @@ Image &Image::operator^(int * pixel)
 Image &Image::operator*(double v)
 {
     for(int i = 0; i < _nb_channels * _height * _width; i++) {
-        _tab[i] = clamp((int)(_tab[i] * v), 0, 255);
+        _tab[i] = (char)clamp((int)(_tab[i] * v), 0, 255);
     }
 
     return *this;
@@ -232,7 +232,7 @@ Image &Image::operator/(double v)
     if(v == 0)
         return *this;
     for(int i = 0; i < _nb_channels * _height * _width; i++) {
-        _tab[i] = clamp((int)(_tab[i] / v), 0, 255);
+        _tab[i] = (char)clamp((int)(_tab[i] / v), 0, 255);
     }
 
     return *this;
@@ -263,7 +263,7 @@ Image Image::operator==(double v)
 Image &Image::operator~()
 {
     for(int i = 0; i < _nb_channels * _height * _width; i++) {
-        _tab[i] = 255 - _tab[i];
+        _tab[i] = (char)255 - _tab[i];
     }
 
     return *this;

@@ -1,5 +1,5 @@
 .PHONY: test clean cov
-CPPflags=-std=c++2c -Wall -pedantic -Wextra -Wreturn-type -Wvexing-parse
+CPPflags=-std=c++2c -Wall -pedantic -Wextra -Wreturn-type -Wvexing-parse -Weverything -Wno-old-style-cast
 
 test:	tests.cpp utest.hpp image.hpp image.cpp
 	g++ $(CPPflags) tests.cpp image.cpp -o test

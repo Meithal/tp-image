@@ -5,7 +5,7 @@
 
 #include "image.hpp"
 
-UTEST_MAIN();
+UTEST_MAIN()
 
 
 struct MyTestFixture {
@@ -18,33 +18,33 @@ UTEST(ImageLib, test_default_constructor) {
   ASSERT_EQ(image.getHeight(), 0);
   ASSERT_EQ(image.getWidth(), 0);
   ASSERT_EQ(image.getNbChannels(), 0);
-  ASSERT_EQ(image.getModel(), Image::Model::None);
+  ASSERT_EQ(image.getModel(), Image::None);
 }
 
 UTEST(ImageLib, test_param_constructor) {
-  Image image(3, 4, 2, Image::Model::Gray);
+  Image image(3, 4, 2, Image::Gray);
   ASSERT_EQ(image.getHeight(), 4);
   ASSERT_EQ(image.getWidth(), 3);
   ASSERT_EQ(image.getNbChannels(), 2);
-  ASSERT_EQ(image.getModel(), Image::Model::Gray);
+  ASSERT_EQ(image.getModel(), Image::Gray);
 }
 
 UTEST(ImageLib, test_param_constructor_value) {
-  Image image(3, 4, 2, Image::Model::Gray, 55);
+  Image image(3, 4, 2, Image::Gray, 55);
   ASSERT_EQ(image.getHeight(), 4);
   ASSERT_EQ(image.getWidth(), 3);
   ASSERT_EQ(image.getNbChannels(), 2);
-  ASSERT_EQ(image.getModel(), Image::Model::Gray);
+  ASSERT_EQ(image.getModel(), Image::Gray);
   ASSERT_EQ(image.at(1, 2, 2), 55);
 }
 
 UTEST(ImageLib, test_copy_constructor) {
-  Image image(3, 4, 2, Image::Model::Gray);
+  Image image(3, 4, 2, Image::Gray);
   Image image2(image);
   ASSERT_EQ(image.getHeight(), 4);
   ASSERT_EQ(image.getWidth(), 3);
   ASSERT_EQ(image.getNbChannels(), 2);
-  ASSERT_EQ(image.getModel(), Image::Model::Gray);
+  ASSERT_EQ(image.getModel(), Image::Gray);
   image.at(1, 2, 2) = 100;
   image(1, 1, 1) = 101;
   ASSERT_EQ(image.at(1, 2, 2), 100);
@@ -56,7 +56,7 @@ UTEST(ImageLib, test_copy_constructor) {
 }
 
 UTEST(ImageLib, string_output) {
-    Image image(3, 4, 2, Image::Model::Gray);
+    Image image(3, 4, 2, Image::Gray);
 
     {
         std::ostringstream oss;
@@ -69,7 +69,7 @@ UTEST(ImageLib, string_output) {
     image.setWidth(10);
     image.setHeight(20);
     image.setNbChannels(5);
-    image.setModel(Image::Model::RGB);
+    image.setModel(Image::RGB);
     {
         std::ostringstream oss;
         oss << image;
@@ -90,7 +90,7 @@ UTEST(ImageLib, string_output) {
 }
 
 UTEST(ImageLib, test_assignment) {
-  Image image(3, 4, 2, Image::Model::Gray);
+  Image image(3, 4, 2, Image::Gray);
   Image image2;
   ASSERT_EQ(image2.getHeight(), 0);
   image2 = image;
