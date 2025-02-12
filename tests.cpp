@@ -115,3 +115,21 @@ UTEST(ImageLib, test_assignment) {
   image2(1, 1, 1) = 101;
   ASSERT_EQ(image2(1, 1, 1), 101);
 }
+
+UTEST(ImageLib, test_addition) {
+  Image i1(2, 2, 3, Image::RGB, 2);
+  Image i2(2, 2, 3, Image::RGB, 3);
+
+  ASSERT_EQ(i1.at(0, 0, 0), 2);
+  ASSERT_EQ(i2.at(0, 0, 0), 3);
+  Image ia = i1 + i2;
+  ASSERT_EQ(ia.at(0, 0, 0), 5);
+  ASSERT_EQ(i1.at(0, 0, 0), 2);
+  ASSERT_EQ(i2.at(0, 0, 0), 3);
+
+  Image i3(2, 2, 3, Image::RGB, 4);
+  i3 += i1;
+
+  ASSERT_EQ(i3.at(0, 0, 0), 6);
+  ASSERT_EQ(i1.at(0, 0, 0), 2);
+}

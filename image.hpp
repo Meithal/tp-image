@@ -49,7 +49,8 @@ public:
     char& at(int channel, int y, int x);
     const char& operator()(int channel, int y, int x) const;
     char& operator()(int channel, int y, int x);
-    Image& operator+(Image&);
+    friend Image operator+(Image&, Image&);
+    Image& operator+=(Image&);
     Image& operator+(int);
     Image& operator+(int*);
     Image& operator-(Image&);

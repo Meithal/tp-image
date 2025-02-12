@@ -139,7 +139,14 @@ char& Image::operator()(int channel, int y, int x)
     return at(channel, y, x);
 }
 
-Image &Image::operator+(Image & o)
+Image operator+(Image &i1, Image &i2)
+{
+    Image im(i1);
+    im += i2;
+    return im;
+}
+
+Image &Image::operator+=(Image & o)
 {
     for(int i = 0; i < _nb_channels * _height * _width; i++) {
         _tab[i] = (char)clamp((int)_tab[i] + (int)o._tab[i], 0, 255);
@@ -269,7 +276,8 @@ Image &Image::operator~()
     return *this;
 }
 
-std::ostream &operator<<(std::ostream&o, Image&i)
+
+std::ostream &operator<<(std::ostream &o, Image &i)
 {
     return i.print(o);
 }
