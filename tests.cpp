@@ -85,7 +85,6 @@ UTEST(ImageLib, string_output) {
         std::string s = oss.str();
 
         ASSERT_STREQ(s.c_str(), "0x0x0(None)");
-
     }
 }
 
@@ -132,4 +131,23 @@ UTEST(ImageLib, test_addition) {
 
   ASSERT_EQ(i3.at(0, 0, 0), 6);
   ASSERT_EQ(i1.at(0, 0, 0), 2);
+
+  i3 *= 2;
+  ASSERT_EQ(i3.at(0, 0, 0), 12);
+  i3 /= 3;
+  ASSERT_EQ(i3.at(0, 0, 0), 4);
 }
+
+UTEST(ImageLib, test_seuil) {
+  Image i1(2, 2, 3, Image::RGB, 2);
+  Image i2(2, 2, 3, Image::RGB, 3);
+
+  Image i3 = i1 < 2;
+  ASSERT_EQ(i3.at(0, 0, 0), 0);
+  
+  ASSERT_EQ(i3.getModel(), Image::Gray);
+
+  Image i4 = i1 > 1;
+  ASSERT_EQ(i3.at(0, 0, 0), 255);
+}
+

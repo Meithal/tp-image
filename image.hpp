@@ -17,7 +17,7 @@ public:
 enum Model{
     None,
     RGB,
-    Gray,
+    Gray
 };
 
 private:
@@ -59,12 +59,19 @@ public:
     Image& operator^(Image&);
     Image& operator^(int);
     Image& operator^(int*);
-    Image& operator*(double);
-    Image& operator/(double);
+    Image& operator*=(double);
+    Image& operator/=(double);
     Image operator<(double);
+    Image operator>(double);
     Image operator==(double);
+    Image operator!=(double);
+    Image operator>=(double);
+    Image operator<=(double);
     Image& operator~();
 
     friend std::ostream& operator<<(std::ostream&, Image&);
+
+    friend void save_file();
+    friend void load_file();
 };
 

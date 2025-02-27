@@ -1,4 +1,5 @@
 #include <utility>
+#include <cfloat>
 
 #include "image.hpp"
 
@@ -225,7 +226,7 @@ Image &Image::operator^(int * pixel)
     return *this;
 }
 
-Image &Image::operator*(double v)
+Image &Image::operator*=(double v)
 {
     for(int i = 0; i < _nb_channels * _height * _width; i++) {
         _tab[i] = (char)clamp((int)(_tab[i] * v), 0, 255);
@@ -234,9 +235,9 @@ Image &Image::operator*(double v)
     return *this;
 }
 
-Image &Image::operator/(double v)
+Image &Image::operator/=(double v)
 {
-    if(v == 0)
+    if(v < DBL_EPSILON)
         return *this;
     for(int i = 0; i < _nb_channels * _height * _width; i++) {
         _tab[i] = (char)clamp((int)(_tab[i] / v), 0, 255);
@@ -245,26 +246,50 @@ Image &Image::operator/(double v)
     return *this;
 }
 
-Image Image::operator<(double v)
-{
-    Image n(*this);
-    for(int y = 0; y < _height; y++)
-        for (int x = 0; x < _width; x++)
-            for(int c = 0; c < _nb_channels; c++)
-                if(at(c, y, x) < v)
+static Image seuil(const Image& ref, double v, bool (*fun)(char v, double seuil)) {
+    Image n(
+        ref.getHeight(), 
+        ref.getHeight(), 
+        ref.getNbChannels(), Image::Gray, 0
+    );
+    n.setModel(Image::Gray);
+    for(int y = 0; y < ref.getHeight(); y++)
+        for (int x = 0; x < ref.getWidth(); x++)
+            for(int c = 0; c < ref.getNbChannels(); c++)
+                if(fun(ref.at(c, y, x), v))
                     n.at(c, y, x) = (char)255;
     return n;
+
+}
+
+Image Image::operator<(double v)
+{
+    return seuil(*this, v, [](char a, double b){return a < b;});
+}
+
+Image Image::operator>(double v)
+{
+    return seuil(*this, v, [](char a, double b){return a > b;});
 }
 
 Image Image::operator==(double v)
 {
-    Image n(*this);
-    for(int y = 0; y < _height; y++)
-        for (int x = 0; x < _width; x++)
-            for(int c = 0; c < _nb_channels; c++)
-                if(at(c, y, x) == v)
-                    n.at(c, y, x) = (char)255;
-    return n;
+    return seuil(*this, v, [](char a, double b){return fabs(a - b) < DBL_EPSILON;});
+}
+
+Image Image::operator!=(double v)
+{
+    return seuil(*this, v, [](char a, double b){return !(fabs(a - b) <  DBL_EPSILON);});
+}
+
+Image Image::operator>=(double v)
+{
+    return seuil(*this, v, [](char a, double b){return fabs(a - b) <  DBL_EPSILON || a > b;});
+}
+
+Image Image::operator<=(double v)
+{
+    return seuil(*this, v, [](char a, double b){return fabs(a - b) <  DBL_EPSILON || a < b;});
 }
 
 Image &Image::operator~()
