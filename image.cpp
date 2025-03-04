@@ -39,16 +39,16 @@ Image::Image(int width, int height,
     _height(height),
     _nb_channels(nb_channels), 
     _model(model),
-    _tab(new char[(unsigned)(nb_channels*width*height)])
+    _tab(new unsigned char[(unsigned)(nb_channels*width*height)])
 {
     std::memset(_tab, remplissage, (unsigned)(nb_channels*width*height));
 }
 
 Image::Image(int width, int height, int nb_channels, 
-    Image::Model model, char* v)
+    Image::Model model, unsigned char* v)
 : _width(width), _height(height),
     _nb_channels(nb_channels), _model(model),
-    _tab(new char[(unsigned)(nb_channels*width*height)])
+    _tab(new unsigned char[(unsigned)(nb_channels*width*height)])
 {
     std::memcpy(_tab, v, (unsigned)(nb_channels*width*height));
 }
@@ -120,22 +120,22 @@ void Image::setModel(Model m)
     _model = m;
 }
 
-const char& Image::at(int channel, int y, int x) const
+const unsigned char& Image::at(int channel, int y, int x) const
 {  
     return const_cast<Image*>(this)->at(channel, y, x);
 }
 
-char &Image::at(int channel, int y, int x)
+unsigned char &Image::at(int channel, int y, int x)
 {
     return _tab[y*_nb_channels*_width+x*_nb_channels+channel];
 }
 
-const char& Image::operator()(int channel, int y, int x) const
+const unsigned char& Image::operator()(int channel, int y, int x) const
 {
     return at(channel, y, x);
 }
 
-char& Image::operator()(int channel, int y, int x)
+unsigned char& Image::operator()(int channel, int y, int x)
 {
     return at(channel, y, x);
 }
@@ -248,7 +248,7 @@ Image &Image::operator/=(double v)
 
 static Image seuil(const Image& ref, double v, bool (*fun)(char v, double seuil)) {
     Image n(
-        ref.getHeight(), 
+        ref.getWidth(), 
         ref.getHeight(), 
         ref.getNbChannels(), Image::Gray, 0
     );
@@ -257,7 +257,9 @@ static Image seuil(const Image& ref, double v, bool (*fun)(char v, double seuil)
         for (int x = 0; x < ref.getWidth(); x++)
             for(int c = 0; c < ref.getNbChannels(); c++)
                 if(fun(ref.at(c, y, x), v))
-                    n.at(c, y, x) = (char)255;
+                    n.at(c, y, x) = (unsigned char)255;
+                else
+                    n.at(c, y, x) = (char)0;
     return n;
 
 }
@@ -305,4 +307,41 @@ Image &Image::operator~()
 std::ostream &operator<<(std::ostream &o, Image &i)
 {
     return i.print(o);
+}
+
+#include <fstream>
+
+// Méthode pour sauvegarder l'image dans un fichier
+bool Image::save(const std::string& filename) const {
+    std::ofstream file(filename, std::ios::binary);
+    if (!file.is_open()) {
+        return false;
+    }
+
+    file.write(reinterpret_cast<const char*>(&_width), sizeof(_width));
+    file.write(reinterpret_cast<const char*>(&_height), sizeof(_height));
+    file.write(reinterpret_cast<const char*>(&_nb_channels), sizeof(_nb_channels));
+
+    file.write(reinterpret_cast<const char*>(&_model), sizeof(_model));
+    file.write(reinterpret_cast<const char*>(_tab), sizeof(char) * _nb_channels * _width * _height);
+
+    return true;
+}
+
+// Méthode pour charger l'image depuis un fichier
+bool Image::load(const std::string& filename) {
+    std::ifstream file(filename, std::ios::binary);
+    if (!file.is_open()) {
+        return false;
+    }
+
+    file.read(reinterpret_cast<char*>(&_width), sizeof(_width));
+    file.read(reinterpret_cast<char*>(&_height), sizeof(_height));
+    file.read(reinterpret_cast<char*>(&_nb_channels), sizeof(_nb_channels));
+
+    file.read(reinterpret_cast<char*>(&_model), sizeof(_model));
+
+    file.read(reinterpret_cast<char*>(_tab), sizeof(char) * _nb_channels * _width * _height);
+
+    return true;
 }

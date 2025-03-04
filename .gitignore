@@ -7,3 +7,6 @@ test_cov
 *.gcda
 *gcno
 *.dSYM
+.idea
+/toto
+/d_test

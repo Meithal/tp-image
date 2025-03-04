@@ -25,12 +25,12 @@ private:
     int _height;
     int _nb_channels;
     enum Model _model;
-    char* _tab;
+    unsigned char* _tab;
 
 public:
     Image();
     Image(int width, int height, int channels, enum Model, int = 0);
-    Image(int width, int height, int channels, enum Model, char*);
+    Image(int width, int height, int channels, enum Model, unsigned char*);
     Image(const Image&);
     ~Image();
     Image& operator=(const Image&);
@@ -45,10 +45,10 @@ public:
     void setModel(enum Model);
     std::ostream& print(std::ostream&);
 
-    const char& at(int channel, int y, int x) const;
-    char& at(int channel, int y, int x);
-    const char& operator()(int channel, int y, int x) const;
-    char& operator()(int channel, int y, int x);
+    const unsigned char& at(int channel, int y, int x) const;
+    unsigned char& at(int channel, int y, int x);
+    const unsigned char& operator()(int channel, int y, int x) const;
+    unsigned char& operator()(int channel, int y, int x);
     friend Image operator+(Image&, Image&);
     Image& operator+=(Image&);
     Image& operator+(int);
@@ -71,7 +71,8 @@ public:
 
     friend std::ostream& operator<<(std::ostream&, Image&);
 
-    friend void save_file();
-    friend void load_file();
+    // Charger et sauvegarder des images (utilisation simple des fichiers binaires)
+    bool save(const std::string& filename) const;
+    bool load(const std::string& filename);
 };
 

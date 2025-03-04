@@ -148,6 +148,21 @@ UTEST(ImageLib, test_seuil) {
   ASSERT_EQ(i3.getModel(), Image::Gray);
 
   Image i4 = i1 > 1;
-  ASSERT_EQ(i3.at(0, 0, 0), 255);
+  ASSERT_EQ(i4.at(0, 0, 0), 255);
 }
 
+UTEST(ImageLib, test_saveload) {
+  Image i1(2, 2, 3, Image::RGB, 2);
+  i1.save("toto");
+
+  Image i2;
+  i2.load("toto");
+
+
+  ASSERT_EQ(i1.at(0, 0, 0), 2);
+  ASSERT_EQ(i1.getWidth(), 2);
+
+  ASSERT_EQ(i2.getWidth(), 2);
+  ASSERT_EQ(i2.at(0, 0, 0), 2);
+
+}
