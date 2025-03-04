@@ -1,5 +1,5 @@
 .PHONY: test clean cov all
-CPPflags=-std=c++2c -Wall -pedantic -Wextra -Weverything -Wno-old-style-cast -Wno-c++98-compat
+CPPflags=-std=c++2c -Wall -pedantic -Wextra -Weverything -Wno-old-style-cast -Wno-c++98-compat -fsafe-buffer-usage-suggestions -Wno-poison-system-directories
 
 test:	tests.cpp utest.hpp image.hpp image.cpp
 	g++ $(CPPflags) tests.cpp image.cpp -o test

@@ -61,12 +61,12 @@ public:
     Image& operator^(int*);
     Image& operator*=(double);
     Image& operator/=(double);
-    Image operator<(double);
-    Image operator>(double);
-    Image operator==(double);
-    Image operator!=(double);
-    Image operator>=(double);
-    Image operator<=(double);
+    Image operator<(double) const;
+    Image operator>(double) const;
+    Image operator==(double) const;
+    Image operator!=(double) const;
+    Image operator>=(double) const;
+    Image operator<=(double) const;
     Image& operator~();
 
     friend std::ostream& operator<<(std::ostream&, Image&);

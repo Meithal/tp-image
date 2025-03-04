@@ -150,7 +150,7 @@ Image operator+(Image &i1, Image &i2)
 Image &Image::operator+=(Image & o)
 {
     for(int i = 0; i < _nb_channels * _height * _width; i++) {
-        _tab[i] = (char)clamp((int)_tab[i] + (int)o._tab[i], 0, 255);
+        _tab[i] = (unsigned char)clamp((int)_tab[i] + (int)o._tab[i], 0, 255);
     }
 
     return *this;
@@ -158,7 +158,7 @@ Image &Image::operator+=(Image & o)
 Image &Image::operator+(int v)
 {
     for(int i = 0; i < _nb_channels * _height * _width; i++) {
-        _tab[i] = (char)clamp((int)_tab[i] + v, 0, 255);
+        _tab[i] = (unsigned char)clamp((int)_tab[i] + v, 0, 255);
     }
 
     return *this;
@@ -167,7 +167,7 @@ Image &Image::operator+(int * pixel)
 {
     for(int i = 0; i < _nb_channels * _height * _width; i+=_nb_channels) {
         for(int j=0; j < _nb_channels; j++) {
-            _tab[i+j] = (char)clamp((int)_tab[i + j] + *(pixel + j), 0, 255);
+            _tab[i+j] = (unsigned char)clamp((int)_tab[i + j] + *(pixel + j), 0, 255);
         }
     }
 
@@ -176,7 +176,7 @@ Image &Image::operator+(int * pixel)
 Image &Image::operator-(Image &o)
 {
     for(int i = 0; i < _nb_channels * _height * _width; i++) {
-        _tab[i] = (char)clamp((int)_tab[i] - (int)o._tab[i], 0, 255);
+        _tab[i] = (unsigned char)clamp((int)_tab[i] - (int)o._tab[i], 0, 255);
     }
 
     return *this;
@@ -184,7 +184,7 @@ Image &Image::operator-(Image &o)
 Image &Image::operator-(int v)
 {
     for(int i = 0; i < _nb_channels * _height * _width; i++) {
-        _tab[i] = (char)clamp((int)_tab[i] - v, 0, 255);
+        _tab[i] = (unsigned char)clamp((int)_tab[i] - v, 0, 255);
     }
 
     return *this;
@@ -193,7 +193,7 @@ Image &Image::operator-(int * pixel)
 {
     for(int i = 0; i < _nb_channels * _height * _width; i+=_nb_channels) {
         for(int j=0; j < _nb_channels; j++) {
-            _tab[i+j] = (char)clamp((int)_tab[i + j] - *(pixel + j), 0, 255);
+            _tab[i+j] = (unsigned char)clamp((int)_tab[i + j] - *(pixel + j), 0, 255);
         }
     }
 
@@ -202,7 +202,7 @@ Image &Image::operator-(int * pixel)
 Image &Image::operator^(Image &o)
 {
     for(int i = 0; i < _nb_channels * _height * _width; i++) {
-        _tab[i] = (char)clamp(std::abs((int)_tab[i] - (int)o._tab[i]), 0, 255);
+        _tab[i] = (unsigned char)clamp(std::abs((int)_tab[i] - (int)o._tab[i]), 0, 255);
     }
 
     return *this;
@@ -210,7 +210,7 @@ Image &Image::operator^(Image &o)
 Image &Image::operator^(int v)
 {
     for(int i = 0; i < _nb_channels * _height * _width; i++) {
-        _tab[i] = (char)clamp(std::abs((int)_tab[i] - v), 0, 255);
+        _tab[i] = (unsigned char)clamp(std::abs((int)_tab[i] - v), 0, 255);
     }
 
     return *this;
@@ -219,7 +219,7 @@ Image &Image::operator^(int * pixel)
 {
     for(int i = 0; i < _nb_channels * _height * _width; i+=_nb_channels) {
         for(int j=0; j < _nb_channels; j++) {
-            _tab[i+j] = (char)clamp(std::abs((int)_tab[i + j] - *(pixel + j)), 0, 255);
+            _tab[i+j] = (unsigned char)clamp(std::abs((int)_tab[i + j] - *(pixel + j)), 0, 255);
         }
     }
 
@@ -229,7 +229,7 @@ Image &Image::operator^(int * pixel)
 Image &Image::operator*=(double v)
 {
     for(int i = 0; i < _nb_channels * _height * _width; i++) {
-        _tab[i] = (char)clamp((int)(_tab[i] * v), 0, 255);
+        _tab[i] = (unsigned char)clamp((int)(_tab[i] * v), 0, 255);
     }
 
     return *this;
@@ -240,13 +240,13 @@ Image &Image::operator/=(double v)
     if(v < DBL_EPSILON)
         return *this;
     for(int i = 0; i < _nb_channels * _height * _width; i++) {
-        _tab[i] = (char)clamp((int)(_tab[i] / v), 0, 255);
+        _tab[i] = (unsigned char)clamp((int)(_tab[i] / v), 0, 255);
     }
 
     return *this;
 }
 
-static Image seuil(const Image& ref, double v, bool (*fun)(char v, double seuil)) {
+static Image seuil(const Image& ref, double v, bool (*fun)(unsigned char v, double seuil)) {
     Image n(
         ref.getWidth(), 
         ref.getHeight(), 
@@ -259,45 +259,45 @@ static Image seuil(const Image& ref, double v, bool (*fun)(char v, double seuil)
                 if(fun(ref.at(c, y, x), v))
                     n.at(c, y, x) = (unsigned char)255;
                 else
-                    n.at(c, y, x) = (char)0;
+                    n.at(c, y, x) = (unsigned char)0;
     return n;
 
 }
 
-Image Image::operator<(double v)
+Image Image::operator<(double v) const
 {
-    return seuil(*this, v, [](char a, double b){return a < b;});
+    return seuil(*this, v, [](unsigned char a, double b){return a < b;});
 }
 
-Image Image::operator>(double v)
+Image Image::operator>(double v) const
 {
-    return seuil(*this, v, [](char a, double b){return a > b;});
+    return seuil(*this, v, [](unsigned char a, double b){return a > b;});
 }
 
-Image Image::operator==(double v)
+Image Image::operator==(double v) const
 {
-    return seuil(*this, v, [](char a, double b){return fabs(a - b) < DBL_EPSILON;});
+    return seuil(*this, v, [](unsigned char a, double b){return fabs(a - b) < DBL_EPSILON;});
 }
 
-Image Image::operator!=(double v)
+Image Image::operator!=(double v) const
 {
-    return seuil(*this, v, [](char a, double b){return !(fabs(a - b) <  DBL_EPSILON);});
+    return seuil(*this, v, [](unsigned char a, double b){return !(fabs(a - b) <  DBL_EPSILON);});
 }
 
-Image Image::operator>=(double v)
+Image Image::operator>=(double v) const
 {
-    return seuil(*this, v, [](char a, double b){return fabs(a - b) <  DBL_EPSILON || a > b;});
+    return seuil(*this, v, [](unsigned char a, double b){return fabs(a - b) <  DBL_EPSILON || a > b;});
 }
 
-Image Image::operator<=(double v)
+Image Image::operator<=(double v) const
 {
-    return seuil(*this, v, [](char a, double b){return fabs(a - b) <  DBL_EPSILON || a < b;});
+    return seuil(*this, v, [](unsigned char a, double b){return fabs(a - b) <  DBL_EPSILON || a < b;});
 }
 
 Image &Image::operator~()
 {
     for(int i = 0; i < _nb_channels * _height * _width; i++) {
-        _tab[i] = (char)255 - _tab[i];
+        _tab[i] = (unsigned char)255 - _tab[i];
     }
 
     return *this;
@@ -323,7 +323,7 @@ bool Image::save(const std::string& filename) const {
     file.write(reinterpret_cast<const char*>(&_nb_channels), sizeof(_nb_channels));
 
     file.write(reinterpret_cast<const char*>(&_model), sizeof(_model));
-    file.write(reinterpret_cast<const char*>(_tab), sizeof(char) * _nb_channels * _width * _height);
+    file.write(reinterpret_cast<const char*>(_tab), (int)sizeof(char) * _nb_channels * _width * _height);
 
     return true;
 }
@@ -341,7 +341,7 @@ bool Image::load(const std::string& filename) {
 
     file.read(reinterpret_cast<char*>(&_model), sizeof(_model));
 
-    file.read(reinterpret_cast<char*>(_tab), sizeof(char) * _nb_channels * _width * _height);
+    file.read(reinterpret_cast<char*>(_tab), (int)sizeof(char) * _nb_channels * _width * _height);
 
     return true;
 }
