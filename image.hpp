@@ -2,6 +2,18 @@
 #include <iostream>
 
 
+class ImageIncompatibleException : public std::exception {
+    private:
+        std::string message;  // Store the error message
+    public:
+        explicit ImageIncompatibleException(const std::string& msg) : message(msg) {}
+    
+        // Override what() to return the message
+        const char* what() const noexcept override {
+            return message.c_str();
+        }
+    };
+
 template<typename T>
 T clamp(T v, T min, T max) {
     if (v < min)
@@ -34,6 +46,7 @@ public:
     Image(const Image&);
     ~Image();
     Image& operator=(const Image&);
+    Image& operator~();
 
     int getWidth() const;
     void setWidth(int);
@@ -67,7 +80,6 @@ public:
     Image operator!=(double) const;
     Image operator>=(double) const;
     Image operator<=(double) const;
-    Image& operator~();
 
     friend std::ostream& operator<<(std::ostream&, Image&);
 

@@ -166,3 +166,21 @@ UTEST(ImageLib, test_saveload) {
   ASSERT_EQ(i2.at(0, 0, 0), 2);
 
 }
+
+
+UTEST(ImageLib, test_exception_incompatible) {
+  {
+    Image i1(2, 2, 3, Image::RGB, 2);
+    Image i2(2, 2, 4, Image::RGB, 2);
+
+    EXPECT_EXCEPTION_WITH_MESSAGE((i1 + i2), ImageIncompatibleException, "images incompatibles (nb channels)");
+  }
+
+  {
+    Image i1(2, 2, 3, Image::Gray, 2);
+    Image i2(2, 2, 3, Image::RGB, 2);
+
+    EXPECT_EXCEPTION_WITH_MESSAGE((i1 + i2), ImageIncompatibleException, "images incompatibles (model)");
+  }
+
+}

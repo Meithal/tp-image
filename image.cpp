@@ -1,8 +1,27 @@
 #include <utility>
+#include <string>
+#include <iostream>
+#include <stdexcept>  // For std::exception
+
 #include <cfloat>
 #include <cmath>
 #include <cstring>
+
+
 #include "image.hpp"
+
+
+// lance une exception si deux images sont incompatibles
+void checkCompatibility(Image & i1, Image & i2)
+{
+    if(i1.getNbChannels() != i2.getNbChannels()) {
+        throw ImageIncompatibleException("images incompatibles (nb channels)");
+    }
+    
+    if(i1.getModel() != i2.getModel()) {
+        throw ImageIncompatibleException("images incompatibles (model)");
+    }
+}
 
 std::ostream& Image::print(std::ostream & o)
 {
@@ -122,7 +141,7 @@ void Image::setModel(Model m)
 }
 
 const unsigned char& Image::at(int channel, int y, int x) const
-{  
+{
     return const_cast<Image*>(this)->at(channel, y, x);
 }
 
@@ -143,6 +162,8 @@ unsigned char& Image::operator()(int channel, int y, int x)
 
 Image operator+(Image &i1, Image &i2)
 {
+    checkCompatibility(i1, i2);
+
     Image im(i1);
     im += i2;
     return im;
@@ -150,12 +171,15 @@ Image operator+(Image &i1, Image &i2)
 
 Image &Image::operator+=(Image & o)
 {
+    checkCompatibility(*this, o);
+
     for(int i = 0; i < _nb_channels * _height * _width; i++) {
         _tab[i] = (unsigned char)clamp((int)_tab[i] + (int)o._tab[i], 0, 255);
     }
 
     return *this;
 }
+
 Image &Image::operator+(int v)
 {
     for(int i = 0; i < _nb_channels * _height * _width; i++) {
@@ -164,6 +188,7 @@ Image &Image::operator+(int v)
 
     return *this;
 }
+
 Image &Image::operator+(int * pixel)
 {
     for(int i = 0; i < _nb_channels * _height * _width; i+=_nb_channels) {
@@ -174,14 +199,18 @@ Image &Image::operator+(int * pixel)
 
     return *this;
 }
+
 Image &Image::operator-(Image &o)
 {
+    checkCompatibility(*this, o);
+
     for(int i = 0; i < _nb_channels * _height * _width; i++) {
         _tab[i] = (unsigned char)clamp((int)_tab[i] - (int)o._tab[i], 0, 255);
     }
 
     return *this;
 }
+
 Image &Image::operator-(int v)
 {
     for(int i = 0; i < _nb_channels * _height * _width; i++) {
@@ -190,6 +219,7 @@ Image &Image::operator-(int v)
 
     return *this;
 }
+
 Image &Image::operator-(int * pixel)
 {
     for(int i = 0; i < _nb_channels * _height * _width; i+=_nb_channels) {
@@ -202,6 +232,8 @@ Image &Image::operator-(int * pixel)
 }
 Image &Image::operator^(Image &o)
 {
+    checkCompatibility(*this, o);
+
     for(int i = 0; i < _nb_channels * _height * _width; i++) {
         _tab[i] = (unsigned char)clamp(std::abs((int)_tab[i] - (int)o._tab[i]), 0, 255);
     }
@@ -248,6 +280,7 @@ Image &Image::operator/=(double v)
 }
 
 static Image seuil(const Image& ref, double v, bool (*fun)(unsigned char v, double seuil)) {
+    
     Image n(
         ref.getWidth(), 
         ref.getHeight(), 
