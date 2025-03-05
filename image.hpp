@@ -2,14 +2,12 @@
 #include <iostream>
 
 
-class ImageIncompatibleException : public std::exception {
+class ImageException : public std::exception {
     private:
         std::string message;  // Store the error message
     public:
-        explicit ImageIncompatibleException(const std::string& msg);
-    
-        // Override what() to return the message
-        const char* what() const noexcept override;
+        explicit ImageException(const std::string& msg);
+            const char* what() const noexcept override;
     };
 
 template<typename T>

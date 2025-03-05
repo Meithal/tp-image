@@ -11,8 +11,9 @@
 #include "image.hpp"
 
 
-ImageIncompatibleException::ImageIncompatibleException(const std::string& msg) : message(msg) {}
-const char* ImageIncompatibleException::what() const noexcept {
+ImageException::ImageException(const std::string& msg) : message(msg) {}
+
+const char* ImageException::what() const noexcept {
     return message.c_str();
 }
 
@@ -20,11 +21,11 @@ const char* ImageIncompatibleException::what() const noexcept {
 static void checkCompatibility(Image & i1, Image & i2)
 {
     if(i1.getNbChannels() != i2.getNbChannels()) {
-        throw ImageIncompatibleException("images incompatibles (nb channels)");
+        throw ImageException("images incompatibles (nb channels)");
     }
     
     if(i1.getModel() != i2.getModel()) {
-        throw ImageIncompatibleException("images incompatibles (model)");
+        throw ImageException("images incompatibles (model)");
     }
 }
 
@@ -147,22 +148,28 @@ void Image::setModel(Model m)
 
 const unsigned char& Image::at(int channel, int y, int x) const
 {
+    if(y< 0 || y > _height || x < 0 || x > _width)
+        throw ImageException("lecture hors champ");
+    
     return const_cast<Image*>(this)->at(channel, y, x);
 }
 
 unsigned char &Image::at(int channel, int y, int x)
 {
+    if(y< 0 || y > _height || x < 0 || x > _width)
+        throw ImageException("lecture hors champ");
+
     return _tab[y*_nb_channels*_width+x*_nb_channels+channel];
 }
 
 const unsigned char& Image::operator()(int channel, int y, int x) const
 {
-    return at(channel, y, x);
+    return _tab[y*_nb_channels*_width+x*_nb_channels+channel];
 }
 
 unsigned char& Image::operator()(int channel, int y, int x)
 {
-    return at(channel, y, x);
+    return _tab[y*_nb_channels*_width+x*_nb_channels+channel];
 }
 
 Image operator+(Image &i1, Image &i2)
@@ -235,6 +242,7 @@ Image &Image::operator-(int * pixel)
 
     return *this;
 }
+
 Image &Image::operator^(Image &o)
 {
     checkCompatibility(*this, o);
@@ -245,6 +253,7 @@ Image &Image::operator^(Image &o)
 
     return *this;
 }
+
 Image &Image::operator^(int v)
 {
     for(int i = 0; i < _nb_channels * _height * _width; i++) {
@@ -253,6 +262,7 @@ Image &Image::operator^(int v)
 
     return *this;
 }
+
 Image &Image::operator^(int * pixel)
 {
     for(int i = 0; i < _nb_channels * _height * _width; i+=_nb_channels) {
