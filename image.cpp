@@ -11,8 +11,13 @@
 #include "image.hpp"
 
 
+ImageIncompatibleException::ImageIncompatibleException(const std::string& msg) : message(msg) {}
+const char* ImageIncompatibleException::what() const noexcept {
+    return message.c_str();
+}
+
 // lance une exception si deux images sont incompatibles
-void checkCompatibility(Image & i1, Image & i2)
+static void checkCompatibility(Image & i1, Image & i2)
 {
     if(i1.getNbChannels() != i2.getNbChannels()) {
         throw ImageIncompatibleException("images incompatibles (nb channels)");

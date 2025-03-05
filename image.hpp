@@ -6,12 +6,10 @@ class ImageIncompatibleException : public std::exception {
     private:
         std::string message;  // Store the error message
     public:
-        explicit ImageIncompatibleException(const std::string& msg) : message(msg) {}
+        explicit ImageIncompatibleException(const std::string& msg);
     
         // Override what() to return the message
-        const char* what() const noexcept override {
-            return message.c_str();
-        }
+        const char* what() const noexcept override;
     };
 
 template<typename T>
