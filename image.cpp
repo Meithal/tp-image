@@ -1,6 +1,7 @@
 #include <utility>
 #include <cfloat>
-
+#include <cmath>
+#include <cstring>
 #include "image.hpp"
 
 std::ostream& Image::print(std::ostream & o)
